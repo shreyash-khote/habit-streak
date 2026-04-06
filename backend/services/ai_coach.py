@@ -1,0 +1,21 @@
+import os
+from openai import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+def get_habit_suggestions_for_goal(goal: str) -> str:
+    """Takes a big goal and uses OpenAI to break it down into daily actionable habits."""
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are 'True Coach', an expert in habit building. Break down the user's large goal into 3 specific, very small daily micro-habits. Return the response as a bulleted list. Do not use markdown headers, just bullet points."},
+                {"role": "user", "content": f"My goal is: {goal}"}
+            ]
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"Error connecting to True Coach ai API: {str(e)}"
