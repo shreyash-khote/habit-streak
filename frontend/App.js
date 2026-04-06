@@ -1,0 +1,133 @@
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, SafeAreaView, StatusBar, Keyboard, ScrollView, KeyboardAvoidingView, Platform, TextInput } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+
+import WelcomeScreen from './src/screens/WelcomeScreen';
+import TimerScreen from './src/screens/TimerScreen';
+import HabitListScreen from './src/screens/HabitListScreen';
+import ProgressDetailScreen from './src/screens/ProgressDetailScreen';
+import OverallProgressScreen from './src/screens/OverallProgressScreen';
+import AICoachScreen from './src/screens/AICoachScreen';
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('Home');
+  const [currentScreen, setCurrentScreen] = useState(0);
+  const [activeHabit, setActiveHabit] = useState(null);
+
+  const [habits, setHabits] = useState([
+    { id: '1', title: 'Read 20 mins', subtitle: 'ea., Blihr 20 minute daily', icon: 'clock', type: 'start', durationSeconds: 1200, targetDays: 30, streak: 12 },
+    { id: '2', title: 'Drink Water', subtitle: 'Completed', icon: 'droplet', type: 'progress', durationSeconds: 0, targetDays: 60, streak: 45, completed: true },
+    { id: '3', title: 'Meditate 10 mins', subtitle: '0.0V4LT30', icon: 'coffee', type: 'start', durationSeconds: 600, targetDays: 21, streak: 2 }
+  ]);
+
+  const handleStartHabit = (habit) => {
+    setActiveHabit(habit);
+    setActiveTab('Focus');
+    setCurrentScreen(1); // Timer screen
+  };
+
+  const handleCompleteHabit = (habitId) => {
+    setHabits(habits.map(h => {
+      if (h.id === habitId && !h.completed) {
+        return { ...h, completed: true, subtitle: 'Completed', type: 'progress', progress: 1, streak: (h.streak || 0) + 1 };
+      }
+      return h;
+    }));
+    setActiveTab('Habits');
+    setCurrentScreen(2);
+  };
+
+  const handleAddHabit = (newTitle, days, hours, minutes, seconds) => {
+    if (!newTitle.trim()) return;
+    
+    let durationStr = '';
+    const d = parseInt(days) || 0;
+    const h = parseInt(hours) || 0;
+    const m = parseInt(minutes) || 0;
+    const s = parseInt(seconds) || 0;
+    const durationSeconds = (h * 3600) + (m * 60) + s;
+
+    if (d > 0) durationStr += `${d} Days `;
+    if (d > 0 && (h > 0 || m > 0 || s > 0)) durationStr += '| ';
+    if (h > 0) durationStr += `${h}h `;
+    if (m > 0) durationStr += `${m}m `;
+    if (s > 0) durationStr += `${s}s`;
+    
+    durationStr = durationStr.trim() ? durationStr.trim() : 'Daily habit';
+
+    setHabits([...habits, {
+      id: Date.now().toString(),
+      title: newTitle,
+      subtitle: durationStr,
+      targetDays: d > 0 ? d : 21, // default 21 days
+      streak: 0,
+      icon: 'star',
+      type: 'start',
+      duration: durationStr,
+      durationSeconds: durationSeconds > 0 ? durationSeconds : 1500 // fallback 25 mins
+    }]);
+    // Optionally navigate straight to the habit list
+    setActiveTab('Habits');
+    setCurrentScreen(2);
+  };
+
+  const renderScreen = () => {
+    switch (currentScreen) {
+      case 0: return <WelcomeScreen onAddHabit={handleAddHabit} habits={habits} />;
+      case 1: return <TimerScreen activeHabit={activeHabit} onCompleteHabit={handleCompleteHabit} />;
+      case 2: return <HabitListScreen habits={habits} onStartHabit={handleStartHabit} />;
+      case 3: return <ProgressDetailScreen habits={habits} onStartHabit={handleStartHabit} />;
+      case 4: return <OverallProgressScreen />;
+      case 5: return <AICoachScreen />;
+      default: return <WelcomeScreen onAddHabit={handleAddHabit} habits={habits} />;
+    }
+  };
+
+  return (
+    <SafeAreaView className="flex-1 bg-[#FCF9F2]">
+      <StatusBar barStyle="dark-content" />
+      <View className="flex-1">
+        {renderScreen()}
+      </View>
+
+      {/* Bottom Navigation */}
+      <View className="absolute bottom-0 w-full bg-[#FCF9F2] border-t border-[#F2EAE0] flex-row justify-around pt-4 pb-8 shadow-[0_-5px_20px_rgba(255,122,89,0.05)] z-50">
+        {[
+          {name: 'Home', icon: 'home', idx: 0},
+          {name: 'Focus', icon: 'play-circle', idx: 1}, 
+          {name: 'Habits', icon: 'list', idx: 2},
+          {name: 'Progress', icon: 'pie-chart', idx: 3}, 
+          {name: 'Stats', icon: 'bar-chart-2', idx: 4},
+          {name: 'Coach', icon: 'cpu', idx: 5}
+        ].map((tab) => (
+          <TouchableOpacity 
+            key={tab.name}
+            onPress={() => {
+              setActiveTab(tab.name);
+              setCurrentScreen(tab.idx);
+            }} 
+            className="items-center px-2"
+          >
+            <Feather 
+              name={tab.icon} 
+              size={22} 
+              color={activeTab === tab.name || currentScreen === tab.idx ? '#FF7A59' : '#C2B8B2'} 
+            />
+            <Text className={`text-[9px] ${activeTab === tab.name || currentScreen === tab.idx ? 'text-[#FF7A59] font-extrabold' : 'text-[#aba29a] font-semibold'} mt-1`}>
+              {tab.name}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+      
+      {/* Floating NEXT SCREEN dev button just to easily cycle through the mockup screens */}
+      <TouchableOpacity 
+         onPress={() => setCurrentScreen((prev) => (prev + 1) % 6)}
+         className="absolute bottom-28 right-4 bg-[#3A2E28] border border-[#5a4a40] rounded-full px-4 py-3 shadow-lg z-50 flex-row items-center space-x-2"
+      >
+         <Text className="text-[#FFFCF8] font-bold text-xs">Next UI</Text>
+         <Feather name="arrow-right" size={14} color="#FFFCF8" />
+      </TouchableOpacity>
+    </SafeAreaView>
+  );
+}
