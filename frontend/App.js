@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, SafeAreaView, StatusBar, Keyboard, ScrollView, KeyboardAvoidingView, Platform, TextInput } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
+if (Platform.OS === 'web') {
+  require('./assets/output.css');
+}
 import WelcomeScreen from './src/screens/WelcomeScreen';
 import TimerScreen from './src/screens/TimerScreen';
 import HabitListScreen from './src/screens/HabitListScreen';
