@@ -13,6 +13,7 @@ def create_habit(db: Session, habit: schemas.HabitCreate, user_id: int = 1):
         frequency_type=habit.frequency_type,
         frequency_days=habit.frequency_days,
         frequency_dates=habit.frequency_dates,
+        start_time=habit.start_time,
         owner_id=user_id
     )
     db.add(db_habit)

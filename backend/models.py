@@ -27,6 +27,7 @@ class Habit(Base):
     frequency_type = Column(String, default="daily") # 'daily', 'weekly', 'monthly'
     frequency_days = Column(String, nullable=True) # Comma-separated: "1,2,3" (0=Mon, 6=Sun)
     frequency_dates = Column(String, nullable=True) # Comma-separated: "1,15,31"
+    start_time = Column(String, default="08:00 AM") # e.g. "08:30 AM"
     
     owner = relationship("User", back_populates="habits")
     logs = relationship("HabitLog", back_populates="habit")

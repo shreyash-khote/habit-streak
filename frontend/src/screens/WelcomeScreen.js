@@ -39,10 +39,16 @@ export default function WelcomeScreen({ onAddHabit, habits = [] }) {
   // Add Habit Form State
   const [showAddForm, setShowAddForm] = useState(false);
   const [inputText, setInputText] = useState('');
-  const [days, setDays] = useState('');
   const [hours, setHours] = useState('');
   const [minutes, setMinutes] = useState('');
   const [seconds, setSeconds] = useState('');
+  
+  // Starting Time & Picker State
+  const [startTime, setStartTime] = useState('08:00 AM');
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [tempHour, setTempHour] = useState('08');
+  const [tempMinute, setTempMinute] = useState('00');
+  const [tempPeriod, setTempPeriod] = useState('AM');
   
   // Frequency State
   const [frequency, setFrequency] = useState('daily'); // 'daily', 'weekly', 'monthly'
@@ -55,14 +61,14 @@ export default function WelcomeScreen({ onAddHabit, habits = [] }) {
       const freqDays = Array.from(selectedWeekDays).sort().join(',');
       const freqDates = Array.from(selectedMonthDates).sort().join(',');
       
-      onAddHabit?.(inputText, days, hours, minutes, seconds, {
+      onAddHabit?.(inputText, startTime, hours, minutes, seconds, {
         frequency_type: frequency,
         frequency_days: frequency === 'weekly' ? freqDays : null,
-        frequency_dates: frequency === 'monthly' ? freqDates : null
+        frequency_dates: frequency === 'monthly' ? freqDates : null,
+        start_time: startTime
       });
 
       setInputText('');
-      setDays('');
       setHours('');
       setMinutes('');
       setSeconds('');
@@ -200,18 +206,18 @@ export default function WelcomeScreen({ onAddHabit, habits = [] }) {
                />
              </View>
 
-             <View className="w-full bg-background rounded-2xl flex-row items-center px-4 py-3 shadow-sm border border-[#F2EAE0] mb-3">
-               <Feather name="calendar" size={18} color="#A39081" />
-               <TextInput 
-                 value={days}
-                 onChangeText={setDays}
-                 placeholder="Target Days (e.g. 21)" 
-                 placeholderTextColor="#A39081"
-                 keyboardType="numeric"
-                 className="flex-1 text-sm ml-2 text-textMain font-bold"
-                 returnKeyType="next"
-               />
-             </View>
+             {/* Starting Time Selector */}
+             <TouchableOpacity 
+               onPress={() => setShowTimePicker(true)}
+               className="w-full bg-background rounded-2xl flex-row items-center px-4 py-3 shadow-sm border border-[#F2EAE0] mb-3"
+             >
+               <Feather name="clock" size={18} color="#A39081" />
+               <View className="flex-1 ml-2">
+                 <Text className="text-[10px] font-bold text-textMuted uppercase tracking-wider">Starting Time</Text>
+                 <Text className="text-sm text-textMain font-black">{startTime}</Text>
+               </View>
+               <Feather name="edit-2" size={14} color="#C2B8B2" />
+             </TouchableOpacity>
 
              {/* Frequency Selector */}
              <Text className="text-[10px] font-black text-textMuted uppercase tracking-widest mb-3 ml-1 mt-1">Frequency</Text>
@@ -316,6 +322,73 @@ export default function WelcomeScreen({ onAddHabit, habits = [] }) {
              >
                <Text className="font-extrabold text-white tracking-widest uppercase text-[10px]">Create Goal</Text>
              </TouchableOpacity>
+           </View>
+        )}
+
+        {/* Custom Clock Modal */}
+        {showTimePicker && (
+          <View className="absolute inset-0 bg-black/40 z-[100] items-center justify-center px-6">
+            <View className="bg-white w-full rounded-[40px] p-8 shadow-2xl">
+              <Text className="text-center font-black text-textMain text-xl mb-8">Set Start Time</Text>
+              
+              <View className="flex-row justify-center items-center mb-8 space-x-4">
+                {/* Hour Col */}
+                <View className="items-center">
+                  <Text className="text-[10px] font-extrabold text-textMuted uppercase mb-2">Hour</Text>
+                  <TextInput 
+                    value={tempHour}
+                    onChangeText={setTempHour}
+                    keyboardType="numeric"
+                    maxLength={2}
+                    className="text-4xl font-black text-primary bg-background px-4 py-2 rounded-2xl w-20 text-center"
+                  />
+                </View>
+                
+                <Text className="text-3xl font-black text-textMuted mt-4">:</Text>
+                
+                {/* Minute Col */}
+                <View className="items-center">
+                  <Text className="text-[10px] font-extrabold text-textMuted uppercase mb-2">Minute</Text>
+                  <TextInput 
+                    value={tempMinute}
+                    onChangeText={setTempMinute}
+                    keyboardType="numeric"
+                    maxLength={2}
+                    className="text-4xl font-black text-primary bg-background px-4 py-2 rounded-2xl w-20 text-center"
+                  />
+                </View>
+
+                {/* Period Picker */}
+                <View className="ml-4 space-y-2">
+                  {['AM', 'PM'].map(p => (
+                    <TouchableOpacity 
+                      key={p}
+                      onPress={() => setTempPeriod(p)}
+                      className={`px-3 py-2 rounded-xl ${tempPeriod === p ? 'bg-primary' : 'bg-background border border-[#F2EAE0]'}`}
+                    >
+                      <Text className={`text-xs font-black ${tempPeriod === p ? 'text-white' : 'text-textMuted'}`}>{p}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+
+              <TouchableOpacity 
+                onPress={() => {
+                  setStartTime(`${tempHour.padStart(2, '0')}:${tempMinute.padStart(2, '0')} ${tempPeriod}`);
+                  setShowTimePicker(false);
+                }}
+                className="w-full py-4 rounded-full bg-primary items-center justify-center shadow-lg shadow-primary/30"
+              >
+                <Text className="font-extrabold text-white tracking-widest uppercase text-[12px]">Save Time</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                onPress={() => setShowTimePicker(false)}
+                className="w-full mt-4 py-2 items-center"
+              >
+                <Text className="font-bold text-textMuted text-[10px] uppercase">Cancel</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
 

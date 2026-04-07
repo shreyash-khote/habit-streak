@@ -40,18 +40,15 @@ export default function App() {
     setCurrentScreen(2);
   };
 
-  const handleAddHabit = (newTitle, days, hours, minutes, seconds) => {
+  const handleAddHabit = (newTitle, startTime, hours, minutes, seconds, frequencyData) => {
     if (!newTitle.trim()) return;
     
     let durationStr = '';
-    const d = parseInt(days) || 0;
     const h = parseInt(hours) || 0;
     const m = parseInt(minutes) || 0;
     const s = parseInt(seconds) || 0;
     const durationSeconds = (h * 3600) + (m * 60) + s;
 
-    if (d > 0) durationStr += `${d} Days `;
-    if (d > 0 && (h > 0 || m > 0 || s > 0)) durationStr += '| ';
     if (h > 0) durationStr += `${h}h `;
     if (m > 0) durationStr += `${m}m `;
     if (s > 0) durationStr += `${s}s`;
@@ -62,7 +59,7 @@ export default function App() {
       id: Date.now().toString(),
       title: newTitle,
       subtitle: durationStr,
-      targetDays: d > 0 ? d : 21, // default 21 days
+      start_time: startTime || '08:00 AM',
       streak: 0,
       icon: 'star',
       type: 'start',
