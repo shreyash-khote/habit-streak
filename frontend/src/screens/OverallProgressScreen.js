@@ -5,55 +5,63 @@ export default function OverallProgressScreen() {
   const [timeRange, setTimeRange] = useState('Monthly');
   const tabs = ['Weekly', 'Monthly', 'Daily'];
 
-  // Dummy data
+  // Dummy data as seen in mockup
   const dataPoints = [3, 5, 2, 8, 4, 7, 5];
 
   return (
-    <SafeAreaView className="flex-1 bg-[#FCF9F2]">
-      <ScrollView className="flex-1 px-4 pt-10" showsVerticalScrollIndicator={false}>
+    <SafeAreaView className="flex-1 bg-background">
+      <ScrollView 
+         className="flex-1 px-8 pt-12" 
+         showsVerticalScrollIndicator={false}
+         contentContainerStyle={{ paddingBottom: 160 }}
+      >
         {/* Header */}
-        <View className="mb-8 px-2">
-          <Text className="text-3xl font-extrabold text-[#3A2E28] tracking-tight">Your Progress</Text>
+        <View className="mb-10">
+          <Text className="text-3xl font-black text-textMain tracking-tight">Your Progress</Text>
         </View>
 
-        {/* Tab Selector */}
-        <View className="flex-row bg-white rounded-full p-1 mb-8 shadow-sm border border-[#F2EAE0]">
+        {/* Tab Selector Segmented Control */}
+        <View className="flex-row bg-white rounded-full p-2 mb-10 shadow-sm border border-[#F2EAE0]">
           {tabs.map((tab) => (
             <TouchableOpacity 
               key={tab}
               onPress={() => setTimeRange(tab)}
-              className={`flex-1 py-3 rounded-full items-center ${timeRange === tab ? 'bg-[#FF7A59] shadow-sm' : 'bg-transparent'}`}
+              className={`flex-1 py-3 rounded-full items-center ${timeRange === tab ? 'bg-primary shadow-lg shadow-primary/20' : 'bg-transparent'}`}
             >
-              <Text className={`font-bold tracking-wide ${timeRange === tab ? 'text-white' : 'text-[#A39081]'}`}>
+              <Text className={`font-black text-xs uppercase tracking-widest ${timeRange === tab ? 'text-white' : 'text-textMuted'}`}>
                 {tab}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        {/* Bar Chart Area */}
-        <View className="bg-white rounded-3xl p-6 mb-8 shadow-sm border border-[#F2EAE0]">
-          <Text className="text-sm font-bold text-[#6B5A52] mb-6 uppercase tracking-widest">Overall Average</Text>
-          <View className="flex-row items-end justify-between h-48 pb-2">
+        {/* Bar Chart Hero Card */}
+        <View className="bg-white rounded-[40px] p-8 mb-10 shadow-sm border border-[#F2EAE0]">
+          <Text className="text-[10px] font-black text-textMuted mb-10 uppercase tracking-[2px]">Overall Average</Text>
+          <View className="flex-row items-end justify-between h-52 pb-4">
             {dataPoints.map((val, idx) => (
-              <View key={idx} className="w-8 items-center">
+              <View key={idx} className="items-center">
                 <View 
-                  className={`w-10 rounded-xl mb-2 ${idx === 3 ? 'bg-[#FF7A59] shadow-sm shadow-[#FF7A59]/40' : 'bg-[#FFF2E0]'}`} 
+                  className={`w-10 rounded-2xl mb-4 ${idx === 3 ? 'bg-primary shadow-lg shadow-primary/30' : 'bg-[#FFF2E0]'}`} 
                   style={{ height: `${val * 10}%` }}
                 />
-                <Text className="text-[10px] text-[#A39081] font-bold">D{idx+1}</Text>
+                <Text className="text-[10px] text-textMuted font-black">D{idx+1}</Text>
               </View>
             ))}
           </View>
         </View>
 
-        {/* Highlight Card */}
-        <View className="bg-[#FFF2E0] rounded-3xl p-6 flex-row items-center justify-between mb-24 shadow-sm border border-[#FDE6C8]">
+        {/* Motivation Card */}
+        <View className="bg-accent rounded-[40px] p-8 flex-row items-center justify-between shadow-sm border border-[#FDE6C8]">
           <View className="flex-1">
-             <Text className="text-lg font-extrabold text-[#D97706] mb-1">Excellent!</Text>
-             <Text className="text-xs text-[#B45309] font-medium leading-relaxed">Your monthly progress is up 15%. Keep the momentum going!</Text>
+             <Text className="text-xl font-black text-[#B45309] mb-2 uppercase tracking-wide">Excellent!</Text>
+             <Text className="text-sm text-[#D97706] font-bold leading-relaxed">
+               Your monthly progress is up 15%. Keep the momentum going!
+             </Text>
           </View>
-          <Text className="text-5xl ml-4">🌟</Text>
+          <View className="ml-4 w-16 h-16 bg-white rounded-full items-center justify-center shadow-lg shadow-orange-900/10 border border-[#FDE6C8]">
+             <Text className="text-4xl text-[#FBBF24]">🌟</Text>
+          </View>
         </View>
 
       </ScrollView>

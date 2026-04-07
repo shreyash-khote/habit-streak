@@ -4,80 +4,71 @@ import { Feather } from '@expo/vector-icons';
 
 export default function HabitListScreen({ habits = [], onStartHabit }) {
   return (
-    <SafeAreaView className="flex-1 bg-[#FCF9F2]">
-      <View className="flex-1 px-4 pt-10 relative">
+    <SafeAreaView className="flex-1 bg-background">
+      <View className="flex-1 px-6 pt-12 relative">
         {/* Header */}
-        <View className="w-full flex-row justify-between mb-8 items-center px-2">
-          <Text className="text-3xl font-extrabold text-[#3A2E28] tracking-tight">Your Habits</Text>
+        <View className="w-full flex-row justify-between mb-10 items-center px-1">
+          <Text className="text-3xl font-black text-textMain tracking-tight">Your Habits</Text>
           <View className="flex-row">
-            <TouchableOpacity className="mr-4 w-10 h-10 bg-white items-center justify-center rounded-full shadow-sm shadow-orange-900/5">
+            <TouchableOpacity className="mr-3 w-10 h-10 bg-white items-center justify-center rounded-full shadow-sm border border-[#F2EAE0]">
               <Feather name="search" size={20} color="#C2B8B2" />
             </TouchableOpacity>
-            <TouchableOpacity className="w-10 h-10 bg-white items-center justify-center rounded-full shadow-sm shadow-orange-900/5">
+            <TouchableOpacity className="w-10 h-10 bg-white items-center justify-center rounded-full shadow-sm border border-[#F2EAE0]">
               <Feather name="filter" size={20} color="#C2B8B2" />
             </TouchableOpacity>
           </View>
         </View>
 
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-          <Text className="text-[#A39081] font-bold text-xs uppercase tracking-widest pl-2 mb-4">Today's List</Text>
-          <View className="space-y-4">
+          <Text className="text-textMuted font-black text-[10px] uppercase tracking-[2px] pl-2 mb-6">Today's List</Text>
+          
+          <View className="gap-y-6">
             {habits.map((habit) => (
-              <View key={habit.id} className="bg-white rounded-3xl p-5 shadow-sm shadow-orange-900/5 border border-[#F2EAE0] mb-4 relative overflow-hidden">
-                {habit.completed && (
-                   <View className="absolute top-0 right-0 h-full w-2 bg-[#F59E0B]"></View>
-                )}
+              <View key={habit.id} className="bg-white rounded-[32px] p-6 shadow-sm border border-[#F2EAE0] mb-6 overflow-hidden relative">
                 
-                <View className="flex-row justify-between items-center mb-3">
-                   <Text className="bg-[#FFFDFB] px-3 py-1 rounded-full text-xs font-bold text-[#A39081] border border-[#F2EAE0]">
-                     Health
-                   </Text>
+                {/* Card Header with Tag */}
+                <View className="flex-row justify-between items-center mb-5">
+                   <View className="bg-card px-4 py-1.5 rounded-full border border-[#F2EAE0]">
+                     <Text className="text-[10px] font-black text-textMuted uppercase tracking-widest">Health</Text>
+                   </View>
                    <TouchableOpacity>
                      <Feather name="more-horizontal" size={20} color="#C2B8B2" />
                    </TouchableOpacity>
                 </View>
 
-                {habit.completed || habit.type === 'progress' ? (
-                   <View className="mt-2">
-                     <View className="flex-row items-center mb-3">
-                         <View className="w-10 h-10 bg-[#FEF3C7] rounded-full justify-center items-center mr-3">
-                            <Feather name="check" size={20} color="#D97706" />
-                         </View>
-                         <View className="flex-1">
-                            <Text className="text-base font-extrabold text-[#3A2E28]">{habit.title}</Text>
-                            <Text className="text-xs text-[#A39081] font-medium">{habit.subtitle}</Text>
-                         </View>
-                         <View className="bg-[#F59E0B] px-3 py-1 rounded-lg">
-                            <Text className="text-[#FFFDFB] text-[10px] font-bold uppercase tracking-widest">Done</Text>
-                         </View>
-                     </View>
-                     {habit.progress !== undefined && (
-                        <View className="h-2 w-full bg-[#F2EAE0] rounded-full mt-2 overflow-hidden">
-                           <View style={{ width: `${habit.progress * 100}%` }} className="h-full bg-[#F59E0B]"></View>
-                        </View>
-                     )}
-                   </View>
-                ) : (
-                   <View className="flex-row justify-between items-center mt-2">
-                     <View className="w-12 h-12 rounded-full bg-[#FCF9F2] border border-[#F2EAE0] justify-center items-center mr-4">
-                        <Feather name={habit.icon || "star"} size={20} color="#FF7A59" />
-                     </View>
-                     <View className="flex-1">
-                        <Text className="text-base font-extrabold text-[#3A2E28]">{habit.title}</Text>
-                        <Text className="text-xs text-[#6B5A52] mb-1 font-bold">{habit.subtitle}</Text>
-                     </View>
-                     <TouchableOpacity 
-                        onPress={() => onStartHabit?.(habit)}
-                        className="bg-[#FF7A59] px-5 py-3 rounded-xl ml-2 shadow-sm shadow-[#FF7A59]/20"
-                     >
-                        <Text className="text-white text-xs font-bold uppercase tracking-widest">Start</Text>
-                     </TouchableOpacity>
-                   </View>
-                )}
+                {/* Main Content */}
+                <View className="flex-row items-center justify-between mb-4">
+                  <View className="flex-row items-center flex-1">
+                    <View className={`w-12 h-12 rounded-full justify-center items-center mr-4 bg-background border border-[#F2EAE0]`}>
+                       <Feather name={habit.icon || "star"} size={22} color={habit.completed ? "#8C7A6B" : "#A04040"} />
+                    </View>
+                    <View className="flex-1">
+                       <Text className="text-lg font-black text-textMain leading-tight">{habit.title}</Text>
+                       <Text className="text-xs text-textMuted font-bold mt-1" numberOfLines={1}>{habit.subtitle}</Text>
+                    </View>
+                  </View>
+                  
+                  <TouchableOpacity 
+                    onPress={() => !habit.completed && onStartHabit?.(habit)}
+                    className={`${habit.completed ? 'bg-primary' : 'bg-primary shadow-lg shadow-primary/20'} px-6 py-3 rounded-2xl ml-4`}
+                  >
+                    <Text className="text-white text-[10px] font-black uppercase tracking-widest">
+                      {habit.completed ? 'Done' : 'Start'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* Bottom Progress Line */}
+                <View className="h-1 w-full bg-background rounded-full mt-2 overflow-hidden">
+                   <View 
+                     className="h-full bg-primary"
+                     style={{ width: habit.completed ? '100%' : `${(habit.streak || 1) * 10}%` }}
+                   />
+                </View>
               </View>
             ))}
           </View>
-          <View className="pb-32"></View>
+          <View className="pb-40"></View>
         </ScrollView>
       </View>
     </SafeAreaView>

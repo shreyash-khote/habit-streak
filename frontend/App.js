@@ -67,7 +67,10 @@ export default function App() {
       icon: 'star',
       type: 'start',
       duration: durationStr,
-      durationSeconds: durationSeconds > 0 ? durationSeconds : 1500 // fallback 25 mins
+      durationSeconds: durationSeconds > 0 ? durationSeconds : 1500, // fallback 25 mins
+      frequency_type: frequencyData?.frequency_type || 'daily',
+      frequency_days: frequencyData?.frequency_days,
+      frequency_dates: frequencyData?.frequency_dates
     }]);
     // Optionally navigate straight to the habit list
     setActiveTab('Habits');
@@ -94,7 +97,7 @@ export default function App() {
       </View>
 
       {/* Bottom Navigation */}
-      <View className="absolute bottom-0 w-full bg-[#FCF9F2] border-t border-[#F2EAE0] flex-row justify-around pt-4 pb-8 shadow-[0_-5px_20px_rgba(255,122,89,0.05)] z-50">
+      <View className="absolute bottom-0 w-full bg-nav flex-row justify-around pt-5 pb-9 z-50">
         {[
           {name: 'Home', icon: 'home', idx: 0},
           {name: 'Focus', icon: 'play-circle', idx: 1}, 
@@ -102,35 +105,29 @@ export default function App() {
           {name: 'Progress', icon: 'pie-chart', idx: 3}, 
           {name: 'Stats', icon: 'bar-chart-2', idx: 4},
           {name: 'Coach', icon: 'cpu', idx: 5}
-        ].map((tab) => (
-          <TouchableOpacity 
-            key={tab.name}
-            onPress={() => {
-              setActiveTab(tab.name);
-              setCurrentScreen(tab.idx);
-            }} 
-            className="items-center px-2"
-          >
-            <Feather 
-              name={tab.icon} 
-              size={22} 
-              color={activeTab === tab.name || currentScreen === tab.idx ? '#FF7A59' : '#C2B8B2'} 
-            />
-            <Text className={`text-[9px] ${activeTab === tab.name || currentScreen === tab.idx ? 'text-[#FF7A59] font-extrabold' : 'text-[#aba29a] font-semibold'} mt-1`}>
-              {tab.name}
-            </Text>
-          </TouchableOpacity>
-        ))}
+        ].map((tab) => {
+          const isActive = activeTab === tab.name || currentScreen === tab.idx;
+          return (
+            <TouchableOpacity 
+              key={tab.name}
+              onPress={() => {
+                setActiveTab(tab.name);
+                setCurrentScreen(tab.idx);
+              }} 
+              className="items-center px-2"
+            >
+              <Feather 
+                name={tab.icon} 
+                size={22} 
+                color={isActive ? '#A04040' : '#8C7A6B'} 
+              />
+              <Text className={`text-[9px] ${isActive ? 'text-[#A04040] font-extrabold' : 'text-[#8C7A6B] font-semibold'} mt-1`}>
+                {tab.name}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
-      
-      {/* Floating NEXT SCREEN dev button just to easily cycle through the mockup screens */}
-      <TouchableOpacity 
-         onPress={() => setCurrentScreen((prev) => (prev + 1) % 6)}
-         className="absolute bottom-28 right-4 bg-[#3A2E28] border border-[#5a4a40] rounded-full px-4 py-3 shadow-lg z-50 flex-row items-center space-x-2"
-      >
-         <Text className="text-[#FFFCF8] font-bold text-xs">Next UI</Text>
-         <Feather name="arrow-right" size={14} color="#FFFCF8" />
-      </TouchableOpacity>
     </SafeAreaView>
   );
 }
