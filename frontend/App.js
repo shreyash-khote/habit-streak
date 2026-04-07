@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, SafeAreaView, StatusBar, Keyboard, ScrollView, KeyboardAvoidingView, Platform, TextInput } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
@@ -11,17 +11,22 @@ import HabitListScreen from './src/screens/HabitListScreen';
 import ProgressDetailScreen from './src/screens/ProgressDetailScreen';
 import OverallProgressScreen from './src/screens/OverallProgressScreen';
 import AICoachScreen from './src/screens/AICoachScreen';
+import { getHabits, createHabit } from './src/api';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('Home');
   const [currentScreen, setCurrentScreen] = useState(0);
   const [activeHabit, setActiveHabit] = useState(null);
 
-  const [habits, setHabits] = useState([
-    { id: '1', title: 'Read 20 mins', subtitle: 'ea., Blihr 20 minute daily', icon: 'clock', type: 'start', durationSeconds: 1200, targetDays: 30, streak: 12 },
-    { id: '2', title: 'Drink Water', subtitle: 'Completed', icon: 'droplet', type: 'progress', durationSeconds: 0, targetDays: 60, streak: 45, completed: true },
-    { id: '3', title: 'Meditate 10 mins', subtitle: '0.0V4LT30', icon: 'coffee', type: 'start', durationSeconds: 600, targetDays: 21, streak: 2 }
-  ]);
+  const [habits, setHabits] = useState([]);
+
+  useEffect(() => {
+    async function loadHabits() {
+      const data = await getHabits();
+      setHabits(data);
+    }
+    loadHabits();
+  }, []);
 
   const handleStartHabit = (habit) => {
     setActiveHabit(habit);
@@ -55,23 +60,32 @@ export default function App() {
     
     durationStr = durationStr.trim() ? durationStr.trim() : 'Daily habit';
 
-    setHabits([...habits, {
-      id: Date.now().toString(),
-      title: newTitle,
-      subtitle: durationStr,
-      start_time: startTime || '08:00 AM',
-      streak: 0,
-      icon: 'star',
-      type: 'start',
-      duration: durationStr,
-      durationSeconds: durationSeconds > 0 ? durationSeconds : 1500, // fallback 25 mins
-      frequency_type: frequencyData?.frequency_type || 'daily',
-      frequency_days: frequencyData?.frequency_days,
-      frequency_dates: frequencyData?.frequency_dates
-    }]);
-    // Optionally navigate straight to the habit list
-    setActiveTab('Habits');
-    setCurrentScreen(2);
+    const saveHabit = async () => {
+      const newHabitData = {
+        title: newTitle,
+        subtitle: durationStr,
+        start_time: startTime || '08:00 AM',
+        streak: 0,
+        icon: 'star',
+        type: 'start',
+        duration: durationStr,
+        durationSeconds: durationSeconds > 0 ? durationSeconds : 1500,
+        frequency_type: frequencyData?.frequency_type || 'daily',
+        frequency_days: frequencyData?.frequency_days,
+        frequency_dates: frequencyData?.frequency_dates
+      };
+
+      try {
+        const savedHabit = await createHabit(newHabitData);
+        setHabits([...habits, savedHabit]);
+        setActiveTab('Habits');
+        setCurrentScreen(2);
+      } catch (error) {
+        alert('Could not save habit to server. Please try again.');
+      }
+    };
+
+    saveHabit();
   };
 
   const renderScreen = () => {
