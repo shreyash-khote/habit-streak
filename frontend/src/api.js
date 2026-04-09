@@ -1,4 +1,4 @@
-const API_URL = "https://habit-streak-coach-rvku.onrender.com";
+const API_URL = "http://10.10.8.59:8000";
 
 export const getHabits = async () => {
   try {
