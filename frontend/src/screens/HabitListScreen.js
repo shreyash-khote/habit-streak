@@ -1,8 +1,24 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, Alert, Platform } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
-export default function HabitListScreen({ habits = [], onStartHabit }) {
+export default function HabitListScreen({ habits = [], onStartHabit, onDeleteHabit }) {
+  const confirmDelete = (habitId, habitTitle) => {
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm(`Are you sure you want to delete "${habitTitle}"?`);
+      if (confirmed) onDeleteHabit?.(habitId);
+    } else {
+      Alert.alert(
+        "Delete Habit?",
+        `Are you sure you want to delete "${habitTitle}"?`,
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Delete", style: "destructive", onPress: () => onDeleteHabit?.(habitId) }
+        ]
+      );
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-background">
       <View className="flex-1 px-6 pt-12 relative">
@@ -31,8 +47,10 @@ export default function HabitListScreen({ habits = [], onStartHabit }) {
                    <View className="bg-card px-4 py-1.5 rounded-full border border-[#F2EAE0]">
                      <Text className="text-[10px] font-black text-textMuted uppercase tracking-widest">Health</Text>
                    </View>
-                   <TouchableOpacity>
-                     <Feather name="more-horizontal" size={20} color="#C2B8B2" />
+                   <TouchableOpacity onPress={() => confirmDelete(habit.id, habit.title)}>
+                     <View className="w-8 h-8 items-center justify-center bg-[#FFF2E0] rounded-full border border-[#FDE6C8]">
+                       <Feather name="trash-2" size={16} color="#A04040" />
+                     </View>
                    </TouchableOpacity>
                 </View>
 
@@ -44,7 +62,12 @@ export default function HabitListScreen({ habits = [], onStartHabit }) {
                     </View>
                     <View className="flex-1">
                        <Text className="text-lg font-black text-textMain leading-tight">{habit.title}</Text>
-                       <Text className="text-xs text-textMuted font-bold mt-1" numberOfLines={1}>{habit.subtitle}</Text>
+                       <View className="flex-row items-center mt-1">
+                         <Feather name="clock" size={10} color="#8C7A6B" />
+                         <Text className="text-[10px] text-textMuted font-bold ml-1 uppercase tracking-wider">
+                           {habit.duration || "Daily"} • {habit.start_time || "Anytime"}
+                         </Text>
+                       </View>
                     </View>
                   </View>
                   

@@ -15,3 +15,14 @@ def read_habits(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 @router.post("/", response_model=schemas.Habit)
 def create_habit(habit: schemas.HabitCreate, db: Session = Depends(get_db)):
     return habit_service.create_habit(db=db, habit=habit)
+
+@router.get("/stats/heatmap", response_model=List[schemas.HeatmapPoint])
+def get_habit_heatmap(db: Session = Depends(get_db)):
+    return habit_service.get_heatmap_data(db=db)
+
+@router.delete("/{habit_id}")
+def delete_habit(habit_id: int, db: Session = Depends(get_db)):
+    success = habit_service.delete_habit(db=db, habit_id=habit_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Habit not found")
+    return {"detail": "Habit deleted"}

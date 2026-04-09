@@ -28,14 +28,16 @@ class Habit(Base):
     frequency_days = Column(String, nullable=True) # Comma-separated: "1,2,3" (0=Mon, 6=Sun)
     frequency_dates = Column(String, nullable=True) # Comma-separated: "1,15,31"
     start_time = Column(String, default="08:00 AM") # e.g. "08:30 AM"
+    duration = Column(String, nullable=True) # e.g. "20m"
+    duration_seconds = Column(Integer, default=1500)
     
     owner = relationship("User", back_populates="habits")
-    logs = relationship("HabitLog", back_populates="habit")
+    logs = relationship("HabitLog", back_populates="habit", cascade="all, delete-orphan")
 
 class HabitLog(Base):
     __tablename__ = "habit_logs"
     id = Column(Integer, primary_key=True, index=True)
-    habit_id = Column(Integer, ForeignKey("habits.id"))
+    habit_id = Column(Integer, ForeignKey("habits.id", ondelete="CASCADE"))
     completed_at = Column(DateTime, default=datetime.utcnow)
     status = Column(String, default="completed") # 'completed', 'frozen', 'skipped'
     notes = Column(Text, nullable=True)

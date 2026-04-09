@@ -1,12 +1,27 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native';
+import ContributionHeatmap from '../components/ContributionHeatmap';
+import { getHeatmapData } from '../api';
 
 export default function OverallProgressScreen() {
   const [timeRange, setTimeRange] = useState('Monthly');
+  const [heatmapData, setHeatmapData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const tabs = ['Weekly', 'Monthly', 'Daily'];
 
-  // Dummy data as seen in mockup
-  const dataPoints = [3, 5, 2, 8, 4, 7, 5];
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const hData = await getHeatmapData();
+        setHeatmapData(hData);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadStats();
+  }, []);
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -17,7 +32,7 @@ export default function OverallProgressScreen() {
       >
         {/* Header */}
         <View className="mb-10">
-          <Text className="text-3xl font-black text-textMain tracking-tight">Your Progress</Text>
+          <Text className="text-3xl font-black text-textMain tracking-tight">Activity Stats</Text>
         </View>
 
         {/* Tab Selector Segmented Control */}
@@ -35,21 +50,12 @@ export default function OverallProgressScreen() {
           ))}
         </View>
 
-        {/* Bar Chart Hero Card */}
-        <View className="bg-white rounded-[40px] p-8 mb-10 shadow-sm border border-[#F2EAE0]">
-          <Text className="text-[10px] font-black text-textMuted mb-10 uppercase tracking-[2px]">Overall Average</Text>
-          <View className="flex-row items-end justify-between h-52 pb-4">
-            {dataPoints.map((val, idx) => (
-              <View key={idx} className="items-center">
-                <View 
-                  className={`w-10 rounded-2xl mb-4 ${idx === 3 ? 'bg-primary shadow-lg shadow-primary/30' : 'bg-[#FFF2E0]'}`} 
-                  style={{ height: `${val * 10}%` }}
-                />
-                <Text className="text-[10px] text-textMuted font-black">D{idx+1}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
+        {/* Heatmap Section */}
+        {loading ? (
+             <ActivityIndicator color="#A04040" className="mb-10" />
+        ) : (
+            <ContributionHeatmap data={heatmapData} weeks={20} />
+        )}
 
         {/* Motivation Card */}
         <View className="bg-accent rounded-[40px] p-8 flex-row items-center justify-between shadow-sm border border-[#FDE6C8]">

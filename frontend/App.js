@@ -11,7 +11,7 @@ import HabitListScreen from './src/screens/HabitListScreen';
 import ProgressDetailScreen from './src/screens/ProgressDetailScreen';
 import OverallProgressScreen from './src/screens/OverallProgressScreen';
 import AICoachScreen from './src/screens/AICoachScreen';
-import { getHabits, createHabit } from './src/api';
+import { getHabits, createHabit, deleteHabit as apiDeleteHabit } from './src/api';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('Home');
@@ -45,6 +45,15 @@ export default function App() {
     setCurrentScreen(2);
   };
 
+  const handleDeleteHabit = async (habitId) => {
+    try {
+      await apiDeleteHabit(habitId);
+      setHabits(habits.filter(h => h.id !== habitId));
+    } catch (error) {
+      alert('Could not delete habit. Please try again.');
+    }
+  };
+
   const handleAddHabit = (newTitle, startTime, hours, minutes, seconds, frequencyData) => {
     if (!newTitle.trim()) return;
     
@@ -69,7 +78,7 @@ export default function App() {
         icon: 'star',
         type: 'start',
         duration: durationStr,
-        durationSeconds: durationSeconds > 0 ? durationSeconds : 1500,
+        duration_seconds: durationSeconds > 0 ? durationSeconds : 1500,
         frequency_type: frequencyData?.frequency_type || 'daily',
         frequency_days: frequencyData?.frequency_days,
         frequency_dates: frequencyData?.frequency_dates
@@ -92,7 +101,7 @@ export default function App() {
     switch (currentScreen) {
       case 0: return <WelcomeScreen onAddHabit={handleAddHabit} habits={habits} />;
       case 1: return <TimerScreen activeHabit={activeHabit} onCompleteHabit={handleCompleteHabit} />;
-      case 2: return <HabitListScreen habits={habits} onStartHabit={handleStartHabit} />;
+      case 2: return <HabitListScreen habits={habits} onStartHabit={handleStartHabit} onDeleteHabit={handleDeleteHabit} />;
       case 3: return <ProgressDetailScreen habits={habits} onStartHabit={handleStartHabit} />;
       case 4: return <OverallProgressScreen />;
       case 5: return <AICoachScreen />;

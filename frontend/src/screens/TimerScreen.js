@@ -13,10 +13,10 @@ export default function TimerScreen({ activeHabit, onCompleteHabit }) {
 
   useEffect(() => {
     if (activeHabit) {
-      const startSecs = activeHabit.durationSeconds || 1500;
+      const startSecs = activeHabit.duration_seconds || activeHabit.durationSeconds || 1500;
       setTimeLeft(startSecs);
       setTotalTime(startSecs);
-      setIsRunning(false);
+      setIsRunning(true);
     } else {
       // Default sample time as seen in mockup
       setTimeLeft(15 * 60 + 30);
@@ -49,6 +49,10 @@ export default function TimerScreen({ activeHabit, onCompleteHabit }) {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
     const s = seconds % 60;
+    
+    if (h > 0) {
+      return `${h}:${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+    }
     return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
   };
 
