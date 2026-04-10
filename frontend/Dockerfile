@@ -21,7 +21,7 @@ FROM nginx:alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Copy custom nginx config to handle React Router-style navigation
-COPY --from=builder /app/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/nginx.conf /etc/nginx/templates/default.conf.template
 
 # Railway sets the PORT env variable; nginx will listen on it
 EXPOSE 80
