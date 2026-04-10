@@ -1,4 +1,4 @@
-const API_URL = "http://10.110.154.143:8000";
+const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://10.110.154.143:8000";
 
 const fetchWithTimeout = async (url, options = {}, timeout = 5000) => {
   const controller = new AbortController();
