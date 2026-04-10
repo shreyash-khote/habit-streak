@@ -35,3 +35,10 @@ class Habit(HabitBase):
 class HeatmapPoint(BaseModel):
     date: str
     count: int
+
+class HabitDetailedStats(BaseModel):
+    habit_id: int
+    title: str
+    category: Optional[str] = None
+    icon: Optional[str] = None
+    points: List[HeatmapPoint]

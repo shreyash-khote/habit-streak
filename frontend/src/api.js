@@ -1,4 +1,4 @@
-const API_URL = "http://10.10.8.59:8000";
+const API_URL = "http://10.110.154.143:8000";
 
 const fetchWithTimeout = async (url, options = {}, timeout = 5000) => {
   const controller = new AbortController();
@@ -55,6 +55,17 @@ export const getHeatmapData = async () => {
     return await response.json();
   } catch (error) {
     console.error('API Error (getHeatmapData):', error);
+    return [];
+  }
+};
+
+export const getDetailedStats = async () => {
+  try {
+    const response = await fetchWithTimeout(`${API_URL}/habits/stats/detailed`);
+    if (!response.ok) throw new Error('Failed to fetch detailed stats');
+    return await response.json();
+  } catch (error) {
+    console.error('API Error (getDetailedStats):', error);
     return [];
   }
 };

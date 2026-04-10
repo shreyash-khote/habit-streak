@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native';
 import ContributionHeatmap from '../components/ContributionHeatmap';
-import { getHeatmapData } from '../api';
+import { getDetailedStats } from '../api';
 
 export default function OverallProgressScreen() {
   const [timeRange, setTimeRange] = useState('Monthly');
-  const [heatmapData, setHeatmapData] = useState([]);
+  const [detailedStats, setDetailedStats] = useState([]);
   const [loading, setLoading] = useState(true);
   const tabs = ['Weekly', 'Monthly', 'Daily'];
 
   useEffect(() => {
     async function loadStats() {
       try {
-        const hData = await getHeatmapData();
-        setHeatmapData(hData);
+        const stats = await getDetailedStats();
+        setDetailedStats(stats);
       } catch (e) {
         console.error(e);
       } finally {
@@ -32,7 +32,7 @@ export default function OverallProgressScreen() {
       >
         {/* Header */}
         <View className="mb-10">
-          <Text className="text-3xl font-black text-textMain tracking-tight">Activity Stats</Text>
+          <Text className="text-3xl font-black text-textMain tracking-tight">Habit Insights</Text>
         </View>
 
         {/* Tab Selector Segmented Control */}
@@ -50,15 +50,25 @@ export default function OverallProgressScreen() {
           ))}
         </View>
 
-        {/* Heatmap Section */}
+        {/* Heatmaps List */}
         {loading ? (
              <ActivityIndicator color="#A04040" className="mb-10" />
         ) : (
-            <ContributionHeatmap data={heatmapData} weeks={20} />
+          detailedStats.map((habitStat) => (
+            <View key={habitStat.habit_id} className="bg-white rounded-[40px] p-6 mb-8 shadow-sm border border-[#F2EAE0]">
+              <View className="flex-row items-center mb-6">
+                <View className="w-8 h-8 rounded-full bg-accent items-center justify-center mr-3">
+                  <Text className="text-sm">🔥</Text>
+                </View>
+                <Text className="text-sm font-black text-textMain uppercase tracking-wider">{habitStat.title}</Text>
+              </View>
+              <ContributionHeatmap data={habitStat.points} weeks={20} />
+            </View>
+          ))
         )}
 
         {/* Motivation Card */}
-        <View className="bg-accent rounded-[40px] p-8 flex-row items-center justify-between shadow-sm border border-[#FDE6C8]">
+        <View className="bg-accent rounded-[40px] p-8 flex-row items-center justify-between shadow-sm border border-[#FDE6C8] mt-4">
           <View className="flex-1">
              <Text className="text-xl font-black text-[#B45309] mb-2 uppercase tracking-wide">Excellent!</Text>
              <Text className="text-sm text-[#D97706] font-bold leading-relaxed">

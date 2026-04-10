@@ -20,6 +20,10 @@ def create_habit(habit: schemas.HabitCreate, db: Session = Depends(get_db)):
 def get_habit_heatmap(db: Session = Depends(get_db)):
     return habit_service.get_heatmap_data(db=db)
 
+@router.get("/stats/detailed", response_model=List[schemas.HabitDetailedStats])
+def get_detailed_stats(db: Session = Depends(get_db)):
+    return habit_service.get_detailed_stats(db=db)
+
 @router.delete("/{habit_id}")
 def delete_habit(habit_id: int, db: Session = Depends(get_db)):
     success = habit_service.delete_habit(db=db, habit_id=habit_id)

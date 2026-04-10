@@ -48,3 +48,42 @@ def delete_habit(db: Session, habit_id: int):
         db.delete(db_habit)
         db.commit()
     return db_habit
+
+def get_detailed_stats(db: Session, user_id: int = 1, days: int = 180):
+    start_date = datetime.utcnow() - timedelta(days=days)
+    
+    # Get all habits for user
+    habits = db.query(models.Habit).filter(models.Habit.owner_id == user_id).all()
+    
+    # Get all logs for these habits in one go to be efficient
+    logs = db.query(
+        models.HabitLog.habit_id,
+        func.date(models.HabitLog.completed_at).label('date'),
+        func.count(models.HabitLog.id).label('count')
+    ).join(models.Habit).filter(
+        models.Habit.owner_id == user_id,
+        models.HabitLog.completed_at >= start_date,
+        models.HabitLog.status == 'completed'
+    ).group_by(
+        models.HabitLog.habit_id,
+        func.date(models.HabitLog.completed_at)
+    ).all()
+    
+    # Organize logs into a dictionary for easy mapping
+    stats_map = {}
+    for log in logs:
+        if log.habit_id not in stats_map:
+            stats_map[log.habit_id] = []
+        stats_map[log.habit_id].append({"date": log.date, "count": log.count})
+        
+    result = []
+    for h in habits:
+        result.append({
+            "habit_id": h.id,
+            "title": h.title,
+            "category": h.category,
+            "icon": "star",
+            "points": stats_map.get(h.id, [])
+        })
+        
+    return result
