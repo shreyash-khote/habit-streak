@@ -4,7 +4,7 @@ FROM node:20-slim AS builder
 WORKDIR /app
 
 # Copy package files and install dependencies
-COPY package.json ./
+COPY package.json package-lock.json ./
 RUN npm install --legacy-peer-deps
 
 # Copy all frontend source files
