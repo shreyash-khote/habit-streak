@@ -7,7 +7,9 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "build:web": "npx tailwindcss -i ./global.css -o ./assets/output.css && expo export --platform web"
+    "build:web": "npx tailwindcss -i ./global.css -o ./assets/output.css && expo export --platform web",
+    "railway:build": "npm install --legacy-peer-deps && npx tailwindcss -i ./global.css -o ./assets/output.css && npx expo export --platform web",
+    "railway:start": "npx serve dist -l ${PORT:-3000}"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
