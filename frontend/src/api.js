@@ -1,4 +1,11 @@
-const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://10.110.154.143:8000";
+import { Platform } from 'react-native';
+
+const getBaseUrl = () => {
+  if (process.env.EXPO_PUBLIC_API_URL) return process.env.EXPO_PUBLIC_API_URL;
+  return 'http://10.110.153.17:8000';
+};
+
+const API_URL = getBaseUrl();
 
 const fetchWithTimeout = async (url, options = {}, timeout = 5000) => {
   const controller = new AbortController();
@@ -22,7 +29,9 @@ export const getHabits = async () => {
     if (!response.ok) throw new Error('Failed to fetch habits');
     return await response.json();
   } catch (error) {
-    console.error('API Error (getHabits):', error);
+    if (error.name !== 'AbortError') {
+      console.error('API Error (getHabits):', error);
+    }
     return [];
   }
 };
@@ -43,7 +52,9 @@ export const createHabit = async (habitData) => {
     }
     return await response.json();
   } catch (error) {
-    console.error('API Error (createHabit):', error);
+    if (error.name !== 'AbortError') {
+      console.error('API Error (createHabit):', error);
+    }
     throw error;
   }
 };
@@ -54,7 +65,9 @@ export const getHeatmapData = async () => {
     if (!response.ok) throw new Error('Failed to fetch heatmap data');
     return await response.json();
   } catch (error) {
-    console.error('API Error (getHeatmapData):', error);
+    if (error.name !== 'AbortError') {
+      console.error('API Error (getHeatmapData):', error);
+    }
     return [];
   }
 };
@@ -65,7 +78,9 @@ export const getDetailedStats = async () => {
     if (!response.ok) throw new Error('Failed to fetch detailed stats');
     return await response.json();
   } catch (error) {
-    console.error('API Error (getDetailedStats):', error);
+    if (error.name !== 'AbortError') {
+      console.error('API Error (getDetailedStats):', error);
+    }
     return [];
   }
 };
@@ -78,7 +93,9 @@ export const deleteHabit = async (habitId) => {
     if (!response.ok) throw new Error('Failed to delete habit');
     return await response.json();
   } catch (error) {
-    console.error('API Error (deleteHabit):', error);
+    if (error.name !== 'AbortError') {
+      console.error('API Error (deleteHabit):', error);
+    }
     throw error;
   }
 };

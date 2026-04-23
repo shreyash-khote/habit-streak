@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, SafeAreaView, Keyboard, ScrollView, Animated, KeyboardAvoidingView, Platform, FlatList } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Keyboard, ScrollView, Animated, KeyboardAvoidingView, Platform, FlatList } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import Svg, { Path, Circle } from 'react-native-svg';
 

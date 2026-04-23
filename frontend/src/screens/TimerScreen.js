@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Modal, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Modal, Animated } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
 import { Feather } from '@expo/vector-icons';
 
