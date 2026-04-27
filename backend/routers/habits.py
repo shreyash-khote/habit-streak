@@ -16,6 +16,13 @@ def read_habits(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 def create_habit(habit: schemas.HabitCreate, db: Session = Depends(get_db)):
     return habit_service.create_habit(db=db, habit=habit)
 
+@router.post("/{habit_id}/complete", response_model=schemas.Habit)
+def complete_habit(habit_id: int, db: Session = Depends(get_db)):
+    habit = habit_service.log_habit_completion(db=db, habit_id=habit_id)
+    if not habit:
+        raise HTTPException(status_code=404, detail="Habit not found")
+    return habit
+
 @router.get("/stats/heatmap", response_model=List[schemas.HeatmapPoint])
 def get_habit_heatmap(db: Session = Depends(get_db)):
     return habit_service.get_heatmap_data(db=db)

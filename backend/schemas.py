@@ -19,6 +19,7 @@ class HabitBase(BaseModel):
     start_time: Optional[str] = "08:00 AM"
     duration: Optional[str] = None
     duration_seconds: Optional[int] = 1500
+    icon: Optional[str] = None
 
 class HabitCreate(HabitBase):
     pass
@@ -28,6 +29,7 @@ class Habit(HabitBase):
     current_streak: int
     max_streak: int
     owner_id: Optional[int] = None
+    completed: bool = False
 
     class Config:
         from_attributes = True

@@ -14,7 +14,7 @@ import OverallProgressScreen from './src/screens/OverallProgressScreen';
 import AICoachScreen from './src/screens/AICoachScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import SignUpScreen from './src/screens/SignUpScreen';
-import { getHabits, createHabit, deleteHabit as apiDeleteHabit } from './src/api';
+import { getHabits, createHabit, deleteHabit as apiDeleteHabit, completeHabit } from './src/api';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './src/firebaseConfig';
 
@@ -54,15 +54,23 @@ export default function App() {
     setCurrentScreen(1); // Timer screen
   };
 
-  const handleCompleteHabit = (habitId) => {
-    setHabits(habits.map(h => {
-      if (h.id === habitId && !h.completed) {
-        return { ...h, completed: true, subtitle: 'Completed', type: 'progress', progress: 1, streak: (h.streak || 0) + 1 };
-      }
-      return h;
-    }));
-    setActiveTab('Habits');
-    setCurrentScreen(2);
+  const handleCompleteHabit = async (habitId) => {
+    try {
+      // API call to log completion
+      await completeHabit(habitId);
+      
+      // Update local state
+      setHabits(habits.map(h => {
+        if (h.id === habitId && !h.completed) {
+          return { ...h, completed: true, subtitle: 'Completed', type: 'progress', progress: 1, streak: (h.streak || 0) + 1 };
+        }
+        return h;
+      }));
+      setActiveTab('Habits');
+      setCurrentScreen(2);
+    } catch (error) {
+      alert('Could not complete habit. Please try again.');
+    }
   };
 
   const handleDeleteHabit = async (habitId) => {
@@ -121,7 +129,7 @@ export default function App() {
     switch (currentScreen) {
       case 0: return <WelcomeScreen onAddHabit={handleAddHabit} habits={habits} />;
       case 1: return <TimerScreen activeHabit={activeHabit} onCompleteHabit={handleCompleteHabit} />;
-      case 2: return <HabitListScreen habits={habits} onStartHabit={handleStartHabit} onDeleteHabit={handleDeleteHabit} />;
+      case 2: return <HabitListScreen habits={habits.filter(h => !h.completed)} onStartHabit={handleStartHabit} onDeleteHabit={handleDeleteHabit} />;
       case 3: return <ProgressDetailScreen habits={habits} onStartHabit={handleStartHabit} />;
       case 4: return <OverallProgressScreen />;
       case 5: return <AICoachScreen />;

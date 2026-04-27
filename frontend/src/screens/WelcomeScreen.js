@@ -43,6 +43,7 @@ export default function WelcomeScreen({ onAddHabit, habits = [] }) {
   const [hours, setHours] = useState('');
   const [minutes, setMinutes] = useState('');
   const [seconds, setSeconds] = useState('');
+  const [selectedEmoji, setSelectedEmoji] = useState('🏃‍♂️');
   
   // Starting Time & Picker State
   const [startTime, setStartTime] = useState('08:00 AM');
@@ -66,7 +67,8 @@ export default function WelcomeScreen({ onAddHabit, habits = [] }) {
         frequency_type: frequency,
         frequency_days: frequency === 'weekly' ? freqDays : null,
         frequency_dates: frequency === 'monthly' ? freqDates : null,
-        start_time: startTime
+        start_time: startTime,
+        icon: selectedEmoji
       });
 
       setInputText('');
@@ -205,6 +207,20 @@ export default function WelcomeScreen({ onAddHabit, habits = [] }) {
                  className="flex-1 text-sm ml-2 text-textMain font-bold"
                  returnKeyType="next"
                />
+             </View>
+
+             {/* Emoji Selector */}
+             <Text className="text-[10px] font-black text-textMuted uppercase tracking-widest mb-3 ml-1 mt-1">Select Icon</Text>
+             <View className="flex-row bg-background rounded-2xl p-1.5 border border-[#F2EAE0] mb-4">
+               {['🏃‍♂️', '📚', '🍳'].map((emoji) => (
+                 <TouchableOpacity 
+                   key={emoji}
+                   onPress={() => setSelectedEmoji(emoji)}
+                   className={`flex-1 py-2 rounded-xl items-center ${selectedEmoji === emoji ? 'bg-primary shadow-sm' : 'bg-transparent'}`}
+                 >
+                   <Text className="text-xl">{emoji}</Text>
+                 </TouchableOpacity>
+               ))}
              </View>
 
              {/* Starting Time Selector */}
@@ -477,33 +493,37 @@ export default function WelcomeScreen({ onAddHabit, habits = [] }) {
              <Text className="text-center font-medium text-textMuted py-4">No habits added yet.</Text>
            ) : (
              <View className="space-y-6">
-               {habits.slice(0, 3).map((habit) => {
-                 const target = habit.targetDays || 21;
-                 const currentStreak = habit.streak || 0;
-                 const progressPercent = Math.min((currentStreak / target) * 100, 100);
-                 
-                 return (
-                   <View key={habit.id}>
-                     <View className="flex-row justify-between items-end mb-2">
-                       <Text className="text-[9px] font-extrabold text-textMuted uppercase tracking-[2px]">{habit.title}</Text>
-                       <View className="flex-row items-baseline">
-                         <Text className="font-black text-textMain text-sm">
-                           {currentStreak}
-                         </Text>
-                         <Text className="text-[10px] font-bold text-textMuted ml-1">
-                           / {target} Days
-                         </Text>
+               {habits.filter(h => (h.current_streak || h.streak || 0) > 0).length === 0 ? (
+                 <Text className="text-center font-medium text-textMuted py-4">You have no active streaks right now. Start a habit to build consistency!</Text>
+               ) : (
+                 habits.filter(h => (h.current_streak || h.streak || 0) > 0).map((habit) => {
+                   const target = habit.targetDays || 21;
+                   const currentStreak = habit.current_streak || habit.streak || 0;
+                   const progressPercent = Math.min((currentStreak / target) * 100, 100);
+                   
+                   return (
+                     <View key={habit.id}>
+                       <View className="flex-row justify-between items-end mb-2">
+                         <Text className="text-[9px] font-extrabold text-textMuted uppercase tracking-[2px]">{habit.title}</Text>
+                         <View className="flex-row items-baseline">
+                           <Text className="font-black text-textMain text-sm">
+                             {currentStreak}
+                           </Text>
+                           <Text className="text-[10px] font-bold text-textMuted ml-1">
+                             Days Consistent
+                           </Text>
+                         </View>
+                       </View>
+                       <View className="h-[6px] bg-background rounded-full w-full overflow-hidden">
+                          <View 
+                             className="h-full rounded-full bg-primary"
+                             style={{ width: `${Math.max(progressPercent, 5)}%` }} 
+                          />
                        </View>
                      </View>
-                     <View className="h-[6px] bg-background rounded-full w-full overflow-hidden">
-                        <View 
-                           className="h-full rounded-full bg-primary"
-                           style={{ width: `${Math.max(progressPercent, 5)}%` }} 
-                        />
-                     </View>
-                   </View>
-                 );
-               })}
+                   );
+                 })
+               )}
              </View>
            )}
         </View>

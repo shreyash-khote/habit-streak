@@ -30,6 +30,7 @@ class Habit(Base):
     start_time = Column(String, default="08:00 AM") # e.g. "08:30 AM"
     duration = Column(String, nullable=True) # e.g. "20m"
     duration_seconds = Column(Integer, default=1500)
+    icon = Column(String, nullable=True)
     
     owner = relationship("User", back_populates="habits")
     logs = relationship("HabitLog", back_populates="habit", cascade="all, delete-orphan")

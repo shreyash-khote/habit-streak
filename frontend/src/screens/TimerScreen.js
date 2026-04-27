@@ -112,6 +112,7 @@ export default function TimerScreen({ activeHabit, onCompleteHabit }) {
             />
           </Svg>
           <View className="absolute items-center justify-center">
+             {activeHabit?.icon && <Text className="text-5xl mb-2">{activeHabit.icon}</Text>}
              <Text className="text-5xl font-black text-textMain tracking-tighter">{displayTime}</Text>
           </View>
         </View>

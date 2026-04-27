@@ -60,6 +60,24 @@ export const createHabit = async (habitData) => {
   }
 };
 
+export const completeHabit = async (habitId) => {
+  try {
+    const response = await fetchWithTimeout(`${API_URL}/habits/${habitId}/complete`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) throw new Error('Failed to complete habit');
+    return await response.json();
+  } catch (error) {
+    if (error.name !== 'AbortError') {
+      console.error('API Error (completeHabit):', error);
+    }
+    throw error;
+  }
+};
+
 export const getHeatmapData = async () => {
   try {
     const response = await fetchWithTimeout(`${API_URL}/habits/stats/heatmap`);
@@ -96,6 +114,25 @@ export const deleteHabit = async (habitId) => {
   } catch (error) {
     if (error.name !== 'AbortError') {
       console.error('API Error (deleteHabit):', error);
+    }
+    throw error;
+  }
+};
+
+export const getCoachBreakdown = async (goal) => {
+  try {
+    const response = await fetchWithTimeout(`${API_URL}/coach/breakdown`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ goal }),
+    }, 15000);
+    if (!response.ok) throw new Error('Failed to fetch breakdown');
+    return await response.json();
+  } catch (error) {
+    if (error.name !== 'AbortError') {
+      console.error('API Error (getCoachBreakdown):', error);
     }
     throw error;
   }

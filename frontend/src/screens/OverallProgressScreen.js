@@ -63,7 +63,10 @@ export default function OverallProgressScreen() {
                 </View>
                 <Text className="text-sm font-black text-textMain uppercase tracking-wider">{habitStat.title}</Text>
               </View>
-              <ContributionHeatmap data={habitStat.points} weeks={20} />
+              <ContributionHeatmap 
+                data={habitStat.points} 
+                weeks={timeRange === 'Weekly' ? 1 : timeRange === 'Monthly' ? 4 : 12} 
+              />
             </View>
           ))
         )}

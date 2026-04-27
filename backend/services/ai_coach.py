@@ -30,4 +30,11 @@ def get_habit_suggestions_for_goal(goal: str) -> str:
         )
         return response.choices[0].message.content
     except Exception as e:
-        return f"Error connecting to True Coach ai API: {str(e)}"
+        print(f"OpenAI Error: {e}")
+        # Fallback to local mock coach if API fails (e.g., quota exceeded or network error)
+        return (
+            "True Coach (Offline Backup):\n"
+            "• Spend 10 minutes daily researching or reading about this goal.\n"
+            "• Dedicate 15 minutes of uninterrupted focus to it today.\n"
+            "• Write down one specific step you will take tomorrow."
+        )
