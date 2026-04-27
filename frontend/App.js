@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StatusBar, Keyboard, ScrollView, KeyboardAvoidingView, Platform, TextInput } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 
 if (Platform.OS === 'web') {
@@ -12,21 +12,40 @@ import HabitListScreen from './src/screens/HabitListScreen';
 import ProgressDetailScreen from './src/screens/ProgressDetailScreen';
 import OverallProgressScreen from './src/screens/OverallProgressScreen';
 import AICoachScreen from './src/screens/AICoachScreen';
+import LoginScreen from './src/screens/LoginScreen';
+import SignUpScreen from './src/screens/SignUpScreen';
 import { getHabits, createHabit, deleteHabit as apiDeleteHabit } from './src/api';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from './src/firebaseConfig';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('Home');
   const [currentScreen, setCurrentScreen] = useState(0);
   const [activeHabit, setActiveHabit] = useState(null);
+  
+  // Auth states
+  const [isLoggedIn, setIsLoggedIn] = useState(null); // null = loading
+  const [isSignUpScreen, setIsSignUpScreen] = useState(false);
 
   const [habits, setHabits] = useState([]);
 
   useEffect(() => {
+    // Listen to Firebase auth state
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    });
+
     async function loadHabits() {
       const data = await getHabits();
       setHabits(data);
     }
     loadHabits();
+
+    return unsubscribe;
   }, []);
 
   const handleStartHabit = (habit) => {
@@ -110,45 +129,75 @@ export default function App() {
     }
   };
 
-  return (
-    <SafeAreaView className="flex-1 bg-[#FCF9F2]">
-      <StatusBar barStyle="dark-content" />
-      <View className="flex-1">
-        {renderScreen()}
-      </View>
+  if (isLoggedIn === null) {
+    return (
+      <SafeAreaProvider>
+        <View className="flex-1 bg-[#FCF9F2] items-center justify-center">
+          <Text>Loading...</Text>
+        </View>
+      </SafeAreaProvider>
+    );
+  }
 
-      {/* Bottom Navigation */}
-      <View className="absolute bottom-0 w-full bg-nav flex-row justify-around pt-5 pb-9 z-50">
-        {[
-          {name: 'Home', icon: 'home', idx: 0},
-          {name: 'Focus', icon: 'play-circle', idx: 1}, 
-          {name: 'Habits', icon: 'list', idx: 2},
-          {name: 'Progress', icon: 'pie-chart', idx: 3}, 
-          {name: 'Stats', icon: 'bar-chart-2', idx: 4},
-          {name: 'Coach', icon: 'cpu', idx: 5}
-        ].map((tab) => {
-          const isActive = activeTab === tab.name || currentScreen === tab.idx;
-          return (
-            <TouchableOpacity 
-              key={tab.name}
-              onPress={() => {
-                setActiveTab(tab.name);
-                setCurrentScreen(tab.idx);
-              }} 
-              className="items-center px-2"
-            >
-              <Feather 
-                name={tab.icon} 
-                size={22} 
-                color={isActive ? '#A04040' : '#8C7A6B'} 
-              />
-              <Text className={`text-[9px] ${isActive ? 'text-[#A04040] font-extrabold' : 'text-[#8C7A6B] font-semibold'} mt-1`}>
-                {tab.name}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-    </SafeAreaView>
+  if (!isLoggedIn) {
+    return (
+      <SafeAreaProvider>
+        {isSignUpScreen ? (
+          <SignUpScreen 
+            onSignUp={(user) => setIsLoggedIn(true)} 
+            onNavigateToLogin={() => setIsSignUpScreen(false)} 
+          />
+        ) : (
+          <LoginScreen 
+            onLogin={(user) => setIsLoggedIn(true)} 
+            onNavigateToSignUp={() => setIsSignUpScreen(true)} 
+          />
+        )}
+      </SafeAreaProvider>
+    );
+  }
+
+  return (
+    <SafeAreaProvider>
+      <SafeAreaView className="flex-1 bg-[#FCF9F2]">
+        <StatusBar barStyle="dark-content" />
+        <View className="flex-1">
+          {renderScreen()}
+        </View>
+
+        {/* Bottom Navigation */}
+        <View className="absolute bottom-0 w-full bg-nav flex-row justify-around pt-5 pb-9 z-50">
+          {[
+            {name: 'Home', icon: 'home', idx: 0},
+            {name: 'Focus', icon: 'play-circle', idx: 1}, 
+            {name: 'Habits', icon: 'list', idx: 2},
+            {name: 'Progress', icon: 'pie-chart', idx: 3}, 
+            {name: 'Stats', icon: 'bar-chart-2', idx: 4},
+            {name: 'Coach', icon: 'cpu', idx: 5}
+          ].map((tab) => {
+            const isActive = activeTab === tab.name || currentScreen === tab.idx;
+            return (
+              <TouchableOpacity 
+                key={tab.name}
+                onPress={() => {
+                  setActiveTab(tab.name);
+                  setCurrentScreen(tab.idx);
+                }} 
+                className="items-center px-2"
+              >
+                <Feather 
+                  name={tab.icon} 
+                  size={22} 
+                  color={isActive ? '#A04040' : '#8C7A6B'} 
+                />
+                <Text className={`text-[9px] ${isActive ? 'text-[#A04040] font-extrabold' : 'text-[#8C7A6B] font-semibold'} mt-1`}>
+                  {tab.name}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }

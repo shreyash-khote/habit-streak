@@ -142,12 +142,15 @@ export default function TimerScreen({ activeHabit, onCompleteHabit }) {
         </View>
 
         {/* Current Streak Footer */}
-        <View className="flex-row justify-between items-end mt-auto pt-6 border-t border-[#F2EAE0]">
+        <View className="flex-row justify-between items-center mt-auto pt-6">
           <View>
-            <Text className="text-base font-black text-textMain mb-1">Current Streak</Text>
-            <Text className="text-sm text-primary font-black">🔥 5 days</Text>
+            <Text className="text-xl font-extrabold text-[#3A2E28] mb-1">Current Streak</Text>
+            <View className="flex-row items-center">
+              <Text className="text-lg mr-1">🔥</Text>
+              <Text className="text-lg text-[#A04040] font-extrabold">{activeHabit?.current_streak || 0} {activeHabit?.current_streak === 1 ? 'day' : 'days'}</Text>
+            </View>
           </View>
-          <View className="w-14 h-14 bg-[#FFF2E0] rounded-full items-center justify-center shadow-sm border border-[#FDE6C8]">
+          <View className="w-16 h-16 bg-[#FFF2E0] rounded-full items-center justify-center border border-[#FDE6C8] shadow-sm">
              <Text className="text-3xl">🔥</Text>
           </View>
         </View>

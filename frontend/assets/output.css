@@ -534,6 +534,10 @@ video {
   position: relative;
 }
 
+.inset-0 {
+  inset: 0px;
+}
+
 .bottom-0 {
   bottom: 0px;
 }
@@ -556,6 +560,10 @@ video {
 
 .z-50 {
   z-index: 50;
+}
+
+.z-\[100\] {
+  z-index: 100;
 }
 
 .m-1 {
@@ -641,6 +649,10 @@ video {
   margin-right: 0.25rem;
 }
 
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
 .mr-3 {
   margin-right: 0.75rem;
 }
@@ -665,8 +677,16 @@ video {
   margin-top: 1rem;
 }
 
+.mt-6 {
+  margin-top: 1.5rem;
+}
+
 .mt-auto {
   margin-top: auto;
+}
+
+.grid {
+  display: grid;
 }
 
 .h-1 {
@@ -709,12 +729,16 @@ video {
   height: 10rem;
 }
 
-.h-52 {
-  height: 13rem;
+.h-5 {
+  height: 1.25rem;
 }
 
 .h-7 {
   height: 1.75rem;
+}
+
+.h-8 {
+  height: 2rem;
 }
 
 .h-9 {
@@ -761,6 +785,10 @@ video {
   width: 9rem;
 }
 
+.w-5 {
+  width: 1.25rem;
+}
+
 .w-7 {
   width: 1.75rem;
 }
@@ -779,6 +807,19 @@ video {
 
 .flex-1 {
   flex: 1 1 0%;
+}
+
+.flex-\[0\.35\] {
+  flex: 0.35;
+}
+
+.flex-\[0\.65\] {
+  flex: 0.65;
+}
+
+.-rotate-\[30deg\] {
+  --tw-rotate: -30deg;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
 .transform {
@@ -851,6 +892,18 @@ video {
   margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
 }
 
+.space-x-6 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-right: calc(1.5rem * var(--tw-space-x-reverse));
+  margin-left: calc(1.5rem * calc(1 - var(--tw-space-x-reverse)));
+}
+
+.space-y-2 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
+}
+
 .space-y-6 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-y-reverse: 0;
   margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
@@ -863,6 +916,10 @@ video {
 
 .overflow-hidden {
   overflow: hidden;
+}
+
+.rounded {
+  border-radius: 0.25rem;
 }
 
 .rounded-2xl {
@@ -897,6 +954,26 @@ video {
   border-radius: 0.75rem;
 }
 
+.rounded-bl-full {
+  border-bottom-left-radius: 9999px;
+}
+
+.rounded-br-full {
+  border-bottom-right-radius: 9999px;
+}
+
+.rounded-tl-\[120px\] {
+  border-top-left-radius: 120px;
+}
+
+.rounded-tl-full {
+  border-top-left-radius: 9999px;
+}
+
+.rounded-tr-full {
+  border-top-right-radius: 9999px;
+}
+
 .border {
   border-width: 1px;
 }
@@ -925,9 +1002,29 @@ video {
   border-color: rgb(160 64 64 / var(--tw-border-opacity));
 }
 
+.bg-\[\#0E7951\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(14 121 81 / var(--tw-bg-opacity));
+}
+
+.bg-\[\#181211\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(24 18 17 / var(--tw-bg-opacity));
+}
+
+.bg-\[\#1877F2\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(24 119 242 / var(--tw-bg-opacity));
+}
+
 .bg-\[\#8A3C3C\] {
   --tw-bg-opacity: 1;
   background-color: rgb(138 60 60 / var(--tw-bg-opacity));
+}
+
+.bg-\[\#8DBB45\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(141 187 69 / var(--tw-bg-opacity));
 }
 
 .bg-\[\#D9CEBF\] {
@@ -973,6 +1070,11 @@ video {
 .bg-background {
   --tw-bg-opacity: 1;
   background-color: rgb(252 249 242 / var(--tw-bg-opacity));
+}
+
+.bg-black {
+  --tw-bg-opacity: 1;
+  background-color: rgb(0 0 0 / var(--tw-bg-opacity));
 }
 
 .bg-black\/40 {
@@ -1105,12 +1207,16 @@ video {
   padding-bottom: 1.25rem;
 }
 
-.pb-4 {
-  padding-bottom: 1rem;
+.pb-1 {
+  padding-bottom: 0.25rem;
 }
 
 .pb-40 {
   padding-bottom: 10rem;
+}
+
+.pb-8 {
+  padding-bottom: 2rem;
 }
 
 .pb-9 {
@@ -1121,12 +1227,20 @@ video {
   padding-left: 0.5rem;
 }
 
+.pr-6 {
+  padding-right: 1.5rem;
+}
+
 .pt-10 {
   padding-top: 2.5rem;
 }
 
 .pt-12 {
   padding-top: 3rem;
+}
+
+.pt-14 {
+  padding-top: 3.5rem;
 }
 
 .pt-5 {
@@ -1306,6 +1420,11 @@ video {
   color: rgb(217 119 6 / var(--tw-text-opacity));
 }
 
+.text-\[\#F08B9B\] {
+  --tw-text-opacity: 1;
+  color: rgb(240 139 155 / var(--tw-text-opacity));
+}
+
 .text-\[\#FBBF24\] {
   --tw-text-opacity: 1;
   color: rgb(251 191 36 / var(--tw-text-opacity));
@@ -1314,6 +1433,11 @@ video {
 .text-\[\#FFFDFB\] {
   --tw-text-opacity: 1;
   color: rgb(255 253 251 / var(--tw-text-opacity));
+}
+
+.text-black {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 
 .text-primary {
@@ -1387,6 +1511,10 @@ video {
 .shadow-primary\/30 {
   --tw-shadow-color: rgb(160 64 64 / 0.3);
   --tw-shadow: var(--tw-shadow-colored);
+}
+
+.outline {
+  outline-style: solid;
 }
 
 .filter {
