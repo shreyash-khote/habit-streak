@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { auth } from './firebaseConfig';
 
 const getBaseUrl = () => {
   if (process.env.EXPO_PUBLIC_API_URL) return process.env.EXPO_PUBLIC_API_URL;
@@ -7,6 +8,17 @@ const getBaseUrl = () => {
 };
 
 const API_URL = getBaseUrl();
+
+// Gets a fresh Firebase ID token for the current user
+const getAuthHeaders = async () => {
+  const user = auth.currentUser;
+  if (!user) return { 'Content-Type': 'application/json' };
+  const token = await user.getIdToken();
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+  };
+};
 
 const fetchWithTimeout = async (url, options = {}, timeout = 5000) => {
   const controller = new AbortController();
@@ -26,7 +38,8 @@ const fetchWithTimeout = async (url, options = {}, timeout = 5000) => {
 
 export const getHabits = async () => {
   try {
-    const response = await fetchWithTimeout(`${API_URL}/habits/`);
+    const headers = await getAuthHeaders();
+    const response = await fetchWithTimeout(`${API_URL}/habits/`, { headers });
     if (!response.ok) throw new Error('Failed to fetch habits');
     return await response.json();
   } catch (error) {
@@ -39,11 +52,10 @@ export const getHabits = async () => {
 
 export const createHabit = async (habitData) => {
   try {
+    const headers = await getAuthHeaders();
     const response = await fetchWithTimeout(`${API_URL}/habits/`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify(habitData),
     });
     if (!response.ok) {
@@ -62,7 +74,8 @@ export const createHabit = async (habitData) => {
 
 export const getHeatmapData = async () => {
   try {
-    const response = await fetchWithTimeout(`${API_URL}/habits/stats/heatmap`);
+    const headers = await getAuthHeaders();
+    const response = await fetchWithTimeout(`${API_URL}/habits/stats/heatmap`, { headers });
     if (!response.ok) throw new Error('Failed to fetch heatmap data');
     return await response.json();
   } catch (error) {
@@ -75,7 +88,8 @@ export const getHeatmapData = async () => {
 
 export const getDetailedStats = async () => {
   try {
-    const response = await fetchWithTimeout(`${API_URL}/habits/stats/detailed`);
+    const headers = await getAuthHeaders();
+    const response = await fetchWithTimeout(`${API_URL}/habits/stats/detailed`, { headers });
     if (!response.ok) throw new Error('Failed to fetch detailed stats');
     return await response.json();
   } catch (error) {
@@ -88,14 +102,38 @@ export const getDetailedStats = async () => {
 
 export const deleteHabit = async (habitId) => {
   try {
+    const headers = await getAuthHeaders();
     const response = await fetch(`${API_URL}/habits/${habitId}`, {
       method: 'DELETE',
+      headers,
     });
     if (!response.ok) throw new Error('Failed to delete habit');
     return await response.json();
   } catch (error) {
     if (error.name !== 'AbortError') {
       console.error('API Error (deleteHabit):', error);
+    }
+    throw error;
+  }
+};
+
+export const getCoachBreakdown = async (goal) => {
+  try {
+    const headers = await getAuthHeaders();
+    const response = await fetchWithTimeout(
+      `${API_URL}/coach/breakdown`,
+      {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ goal }),
+      },
+      15000 // 15s — AI can be slow
+    );
+    if (!response.ok) throw new Error('Coach API error');
+    return await response.json();
+  } catch (error) {
+    if (error.name !== 'AbortError') {
+      console.error('API Error (getCoachBreakdown):', error);
     }
     throw error;
   }

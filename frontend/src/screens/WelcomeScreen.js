@@ -479,27 +479,58 @@ export default function WelcomeScreen({ onAddHabit, habits = [] }) {
              <View className="space-y-6">
                {habits.slice(0, 3).map((habit) => {
                  const target = habit.targetDays || 21;
-                 const currentStreak = habit.streak || 0;
+                 const currentStreak = habit.current_streak || habit.streak || 0;
+                 const longestStreak = habit.max_streak || habit.longest_streak || currentStreak;
                  const progressPercent = Math.min((currentStreak / target) * 100, 100);
                  
                  return (
-                   <View key={habit.id}>
+                   <View key={habit.id} style={{ marginBottom: 20 }}>
+                     {/* Habit title row */}
                      <View className="flex-row justify-between items-end mb-2">
-                       <Text className="text-[9px] font-extrabold text-textMuted uppercase tracking-[2px]">{habit.title}</Text>
+                       <Text className="text-[9px] font-extrabold text-textMuted uppercase tracking-[2px]" style={{ flex: 1, marginRight: 8 }} numberOfLines={2}>
+                         {habit.title}
+                       </Text>
                        <View className="flex-row items-baseline">
-                         <Text className="font-black text-textMain text-sm">
-                           {currentStreak}
+                         <Text className="font-black text-textMain text-sm">{currentStreak}</Text>
+                         <Text className="text-[10px] font-bold text-textMuted ml-1">/ {target} Days</Text>
+                       </View>
+                     </View>
+
+                     {/* Streak badges row */}
+                     <View className="flex-row mb-2" style={{ gap: 6 }}>
+                       {/* Current Streak */}
+                       <View style={{
+                         flexDirection: 'row', alignItems: 'center',
+                         backgroundColor: '#FFF2E0', borderRadius: 999,
+                         paddingHorizontal: 8, paddingVertical: 3,
+                         borderWidth: 1, borderColor: '#FDE6C8',
+                       }}>
+                         <Text style={{ fontSize: 11, marginRight: 3 }}>🔥</Text>
+                         <Text style={{ fontSize: 9, fontWeight: '800', color: '#A04040', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                           {currentStreak}d streak
                          </Text>
-                         <Text className="text-[10px] font-bold text-textMuted ml-1">
-                           / {target} Days
+                       </View>
+
+                       {/* Longest Streak */}
+                       <View style={{
+                         flexDirection: 'row', alignItems: 'center',
+                         backgroundColor: '#F2EAE0', borderRadius: 999,
+                         paddingHorizontal: 8, paddingVertical: 3,
+                         borderWidth: 1, borderColor: '#E8DDD4',
+                       }}>
+                         <Text style={{ fontSize: 11, marginRight: 3 }}>🏆</Text>
+                         <Text style={{ fontSize: 9, fontWeight: '800', color: '#6B5A52', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                           best {longestStreak}d
                          </Text>
                        </View>
                      </View>
+
+                     {/* Progress bar */}
                      <View className="h-[6px] bg-background rounded-full w-full overflow-hidden">
-                        <View 
-                           className="h-full rounded-full bg-primary"
-                           style={{ width: `${Math.max(progressPercent, 5)}%` }} 
-                        />
+                       <View
+                         className="h-full rounded-full bg-primary"
+                         style={{ width: `${Math.max(progressPercent, 5)}%` }}
+                       />
                      </View>
                    </View>
                  );

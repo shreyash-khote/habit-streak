@@ -8,3 +8,5 @@ openai
 alembic
 passlib[bcrypt]
 python-multipart
+psycopg2-binary
+firebase-admin

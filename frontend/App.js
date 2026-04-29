@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StatusBar, Keyboard, ScrollView, KeyboardAvoidingView, Platform, TextInput } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
@@ -22,7 +22,13 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('Home');
   const [currentScreen, setCurrentScreen] = useState(0);
   const [activeHabit, setActiveHabit] = useState(null);
-  
+
+  // ── Timer state lifted here so it survives tab switches ──
+  const [timerTimeLeft, setTimerTimeLeft] = useState(0);
+  const [timerTotalTime, setTimerTotalTime] = useState(0);
+  const [timerRunning, setTimerRunning] = useState(false);
+  const timerRef = useRef(null);
+
   // Auth states
   const [isLoggedIn, setIsLoggedIn] = useState(null); // null = loading
   const [isSignUpScreen, setIsSignUpScreen] = useState(false);
@@ -30,31 +36,40 @@ export default function App() {
   const [habits, setHabits] = useState([]);
 
   useEffect(() => {
-    // Listen to Firebase auth state
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    // Listen to Firebase auth state — load habits only after auth is confirmed
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setIsLoggedIn(true);
+        // Now that we have a valid user, fetch their habits with a proper token
+        const data = await getHabits();
+        setHabits(data);
       } else {
         setIsLoggedIn(false);
+        setHabits([]); // clear habits on sign-out
       }
     });
-
-    async function loadHabits() {
-      const data = await getHabits();
-      setHabits(data);
-    }
-    loadHabits();
 
     return unsubscribe;
   }, []);
 
   const handleStartHabit = (habit) => {
+    // Resolve the actual duration — never fall back to 25 min blindly
+    const secs = habit.duration_seconds > 0
+      ? habit.duration_seconds
+      : habit.durationSeconds > 0
+        ? habit.durationSeconds
+        : 60; // 1-minute minimum if truly unset
     setActiveHabit(habit);
+    setTimerTotalTime(secs);
+    setTimerTimeLeft(secs);
+    setTimerRunning(true);
     setActiveTab('Focus');
-    setCurrentScreen(1); // Timer screen
+    setCurrentScreen(1);
   };
 
   const handleCompleteHabit = (habitId) => {
+    setTimerRunning(false);
+    setTimerTimeLeft(0);
     setHabits(habits.map(h => {
       if (h.id === habitId && !h.completed) {
         return { ...h, completed: true, subtitle: 'Completed', type: 'progress', progress: 1, streak: (h.streak || 0) + 1 };
@@ -71,6 +86,27 @@ export default function App() {
       setHabits(habits.filter(h => h.id !== habitId));
     } catch (error) {
       alert('Could not delete habit. Please try again.');
+    }
+  };
+
+  /** Called from AICoachScreen when user taps '+ ADD' on a suggested habit */
+  const handleAddHabitFromCoach = async (habitData) => {
+    try {
+      const newHabitData = {
+        title: habitData.title,
+        subtitle: 'Daily habit',
+        start_time: '08:00 AM',
+        streak: 0,
+        icon: 'star',
+        type: 'start',
+        duration: 'Daily habit',
+        duration_seconds: 1500,
+        frequency_type: habitData.frequency_type || 'daily',
+      };
+      const savedHabit = await createHabit(newHabitData);
+      setHabits((prev) => [...prev, savedHabit]);
+    } catch (error) {
+      console.error('Could not save AI habit:', error);
     }
   };
 
@@ -120,11 +156,22 @@ export default function App() {
   const renderScreen = () => {
     switch (currentScreen) {
       case 0: return <WelcomeScreen onAddHabit={handleAddHabit} habits={habits} />;
-      case 1: return <TimerScreen activeHabit={activeHabit} onCompleteHabit={handleCompleteHabit} />;
+      case 1: return (
+        <TimerScreen
+          activeHabit={activeHabit}
+          onCompleteHabit={handleCompleteHabit}
+          timeLeft={timerTimeLeft}
+          setTimeLeft={setTimerTimeLeft}
+          totalTime={timerTotalTime}
+          setTotalTime={setTimerTotalTime}
+          isRunning={timerRunning}
+          setIsRunning={setTimerRunning}
+        />
+      );
       case 2: return <HabitListScreen habits={habits} onStartHabit={handleStartHabit} onDeleteHabit={handleDeleteHabit} />;
       case 3: return <ProgressDetailScreen habits={habits} onStartHabit={handleStartHabit} />;
       case 4: return <OverallProgressScreen />;
-      case 5: return <AICoachScreen />;
+      case 5: return <AICoachScreen onAddHabit={handleAddHabitFromCoach} />;
       default: return <WelcomeScreen onAddHabit={handleAddHabit} habits={habits} />;
     }
   };
