@@ -22,12 +22,12 @@ export default function ContributionHeatmap({ data = [], weeks = 24 }) {
 
   // Function to get color based on count
   const getColor = (count) => {
-    if (!count || count === 0) return '#EBEDF0'; // Empty state (GitHub Light Gray)
-    if (count === 1) return '#9BE9A8'; // Light Green
-    if (count === 2) return '#40C463'; // Medium Green
-    if (count === 3) return '#30A14E'; // Dark Green
-    if (count >= 4) return '#216E39'; // Deepest Green (App Theme)
-    return '#EBEDF0';
+    if (!count || count === 0) return '#DCF5E2'; // Very light green (empty state)
+    if (count === 1) return '#9BE9A8'; // Light green
+    if (count === 2) return '#40C463'; // Medium green
+    if (count === 3) return '#30A14E'; // Dark green
+    if (count >= 4) return '#216E39'; // Deepest green
+    return '#DCF5E2';
   };
 
   const renderGrid = () => {
@@ -68,27 +68,31 @@ export default function ContributionHeatmap({ data = [], weeks = 24 }) {
   const totalHeight = daysInWeek * (squareSize + squareMargin);
 
   return (
-    <View className="bg-white rounded-[32px] p-6 mb-8 border border-[#F2EAE0]">
-      <Text className="text-[10px] font-black text-textMuted mb-6 uppercase tracking-[2px]">Commitment Heatmap</Text>
-      
-      <View className="overflow-hidden">
+    <View style={{ paddingVertical: 4 }}>
+      <Text style={{
+        fontSize: 10, fontWeight: '800', color: '#8C7A6B',
+        letterSpacing: 2, textTransform: 'uppercase', marginBottom: 12,
+      }}>
+        Commitment Heatmap
+      </Text>
+
+      <View style={{ overflow: 'hidden' }}>
         <Svg width={totalWidth} height={totalHeight}>
           {renderGrid()}
         </Svg>
       </View>
-      
-      <View className="flex-row items-center justify-between mt-6">
-        <View className="flex-row items-center">
-            <Text className="text-[9px] font-bold text-textMuted mr-2">Less</Text>
-            {[0, 1, 2, 3, 4].map(v => (
-                <View 
-                    key={v} 
-                    style={{ backgroundColor: getColor(v), width: 8, height: 8, marginRight: 2, borderRadius: 1 }} 
-                />
-            ))}
-            <Text className="text-[9px] font-bold text-textMuted ml-1">More</Text>
+
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={{ fontSize: 9, fontWeight: '700', color: '#8C7A6B', marginRight: 4 }}>Less</Text>
+          {[0, 1, 2, 3, 4].map(v => (
+            <View key={v} style={{ backgroundColor: getColor(v), width: 8, height: 8, marginRight: 2, borderRadius: 1 }} />
+          ))}
+          <Text style={{ fontSize: 9, fontWeight: '700', color: '#8C7A6B', marginLeft: 2 }}>More</Text>
         </View>
-        <Text className="text-[9px] font-black text-textMuted uppercase tracking-widest">Last {weeks} Weeks</Text>
+        <Text style={{ fontSize: 9, fontWeight: '800', color: '#8C7A6B', textTransform: 'uppercase', letterSpacing: 1 }}>
+          Last {weeks} Weeks
+        </Text>
       </View>
     </View>
   );

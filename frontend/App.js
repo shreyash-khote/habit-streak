@@ -34,6 +34,7 @@ export default function App() {
   const [isSignUpScreen, setIsSignUpScreen] = useState(false);
 
   const [habits, setHabits] = useState([]);
+  const [statsRefreshKey, setStatsRefreshKey] = useState(0); // bumped when a habit is completed
 
   useEffect(() => {
     // Listen to Firebase auth state — load habits only after auth is confirmed
@@ -76,6 +77,7 @@ export default function App() {
       }
       return h;
     }));
+    setStatsRefreshKey(k => k + 1); // trigger Stats tab to refetch
     setActiveTab('Habits');
     setCurrentScreen(2);
   };
@@ -170,7 +172,7 @@ export default function App() {
       );
       case 2: return <HabitListScreen habits={habits} onStartHabit={handleStartHabit} onDeleteHabit={handleDeleteHabit} />;
       case 3: return <ProgressDetailScreen habits={habits} onStartHabit={handleStartHabit} />;
-      case 4: return <OverallProgressScreen />;
+      case 4: return <OverallProgressScreen habits={habits} statsRefreshKey={statsRefreshKey} />;
       case 5: return <AICoachScreen onAddHabit={handleAddHabitFromCoach} />;
       default: return <WelcomeScreen onAddHabit={handleAddHabit} habits={habits} />;
     }

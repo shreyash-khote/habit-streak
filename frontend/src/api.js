@@ -1,10 +1,9 @@
-import { Platform } from 'react-native';
 import { auth } from './firebaseConfig';
 
 const getBaseUrl = () => {
   if (process.env.EXPO_PUBLIC_API_URL) return process.env.EXPO_PUBLIC_API_URL;
-  if (Platform.OS === 'web') return 'http://localhost:8000';
-  return 'http://10.110.153.17:8000';
+  // Use deployed Cloud Run backend for all platforms (web + APK)
+  return 'https://habit-streak-backend-ogesdpi3qq-uc.a.run.app';
 };
 
 const API_URL = getBaseUrl();
